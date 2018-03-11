@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Converts a CSV to a LaTeX table.
 
@@ -7,36 +9,41 @@ supports space breaks.
 """
 
 import csv
+import sys
 
-print("Enter the csv filepath: ")
-filename = input()
+filenames = sys.argv[1:]
 
-reader = csv.reader(open(filename))
-csv = []
-len_arr = []
+for filename in filenames:
+    print("start", filename)
 
-for i, row in enumerate(reader):
-    csv.append([])
-    for j, entry in enumerate(row):
-        # determine max length for the column
-        if len(len_arr) < j + 1:
-            len_arr.append(len(entry))
-        elif len(entry) > len_arr[j]:
-            len_arr[j] = len(entry)
+    reader = csv.reader(open(filename))
+    tbl = []
+    len_arr = []
 
-        csv[i].append(entry)
+    for i, row in enumerate(reader):
+        tbl.append([])
+        for j, entry in enumerate(row):
+            # determine max length for the column
+            if len(len_arr) < j + 1:
+                len_arr.append(len(entry))
+            elif len(entry) > len_arr[j]:
+                len_arr[j] = len(entry)
 
-for row in csv:
-    for i, elem in enumerate(row):
-        max_len = len_arr[i]
-        fluff_len = max_len - len(elem)
+            tbl[i].append(entry)
 
-        fluff = ""
-        for j in range(fluff_len):
-            fluff = fluff + " "
+    for row in tbl:
+        for i, elem in enumerate(row):
+            max_len = len_arr[i]
+            fluff_len = max_len - len(elem)
 
-        print(elem + fluff, end='')
-        if i < len(row) - 1:
-            print(end=' & ');
-    print(' \\\\')
+            fluff = ""
+            for j in range(fluff_len):
+                fluff = fluff + " "
+
+            print(elem + fluff, end='')
+            if i < len(row) - 1:
+                print(end=' & ');
+        print(' \\\\')
+
+    print("end", filename, end="\n\n")
 
